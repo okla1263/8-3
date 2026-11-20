@@ -86,7 +86,10 @@
     }
     .cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
     .card { border: 2px solid #2D2A32; border-radius: 16px; padding: 14px; background: #FFF0EB; }
+    .card.g2 { background: #EAF6FF; }
+    .card.g3 { background: #FFF8E1; }
     .card-pos { font-size: 0.8rem; font-weight: 900; background: #fff; display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1.5px solid #2D2A32; margin-bottom: 6px; }
+    .card-no { font-size: 0.78rem; color: #6B6575; font-weight: 700; margin-left: 6px; }
     .card-title { font-size: 1.1rem; font-weight: 900; margin: 4px 0; }
     .card-tip { margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(45,42,50,0.25); font-weight: 700; font-size: 0.9rem; }
     .reply-box { background: #FFFDF7; border: 2px solid #2D2A32; border-radius: 16px; padding: 14px; font-size: 0.95rem; }
@@ -101,7 +104,7 @@
   <div class="wrap">
     <div class="box">
       <h1>🏮 流月與開悟卡 · 溫柔占卜手帳</h1>
-      <p>輸入生辰與此刻想問的事，搭配當下流月與 3 張開悟卡，看看當下的節奏與溫柔轉念。</p>
+      <p>輸入生辰與此刻想問的事，搭配當下流月與 48 張開悟卡分 3 組抽牌，看看當下的節奏與溫柔轉念。</p>
     </div>
 
     <div class="box">
@@ -159,9 +162,10 @@
     </div>
 
     <div class="box">
-      <h2>2. 帶著問題抽 3 張開悟卡</h2>
+      <h2>2. 48 張開悟卡分 3 組抽牌</h2>
+      <p style="font-size:0.86rem;">第 1 組（第 1～16 張）看現況卡點 · 第 2 組（第 17～32 張）看破局行動 · 第 3 組（第 33～48 張）看情緒價值與力量</p>
       <div class="q-now" id="qBanner">目前對齊的提問：尚未輸入特定問題</div>
-      <button type="button" class="btn" id="drawBtn">✨ 洗牌並抽 3 張牌</button>
+      <button type="button" class="btn" id="drawBtn">✨ 分 3 組洗牌並各抽 1 張</button>
       <div class="cards" id="cardsBox"></div>
     </div>
 
@@ -208,19 +212,63 @@
       "正印": "這個月很需要被照顧、被理解與充電，允許自己慢下來補充能量，不需要時時維持完美。"
     };
 
-    var CARDS = [
-      { name: "新芽破土", kw: "微小的開始", desc: "不用一次長成大樹，先踏出今天最輕鬆的一小步。", tip: "先挑最小、最沒壓力的那一小步開始就好。" },
-      { name: "水面映月", kw: "靜下心看", desc: "心起波瀾時先別急著下定論，等水紋慢下來答案會浮現。", tip: "先讓呼吸慢下來，看清楚情緒背後的提醒。" },
-      { name: "暖燈守夜", kw: "溫柔陪伴", desc: "你已經撐過很多看不見的辛苦，允許自己把責任放輕一點。", tip: "先照顧好自己的疲憊，慢一點也沒關係。" },
-      { name: "風鈴微響", kw: "順勢而為", desc: "越用力抓越緊，不如順著當下的節奏調整步伐。", tip: "少一點硬要控制的力氣，讓事情自然流動。" },
-      { name: "甘甜回蘊", kw: "累積發酵", desc: "看似還沒看到回報的努力，正在底層悄悄釀造。", tip: "給這件事一點發酵的時間，現在未必是全貌。" },
-      { name: "指南針微調", kw: "回到自己", desc: "外界聲音太多時，問問自己什麼才真的讓人自在。", tip: "把焦點拉回自己身上，聽聽內心真正的感受。" },
-      { name: "雲散見晴", kw: "換個角度", desc: "卡住時換個高度或找人聊聊，眼前的風景會不一樣。", tip: "迷霧只是暫時的視角，換個角度光就會進來。" },
-      { name: "落葉歸根", kw: "適時割捨", desc: "放下不再適合的執著，才能幫未來留出呼吸的空間。", tip: "適度放下多餘負擔，空出位置迎向新能量。" },
-      { name: "晨光灑落", kw: "重啟能量", desc: "不管昨天如何，今天都是新的起點，相信自己的光。", tip: "帶著一份溫柔的信任出發，你比想像中有力量。" }
+    // 48 張開悟卡：第 1～16 張（第1組：現況與流月卡點）、第 17～32 張（第2組：破局與行動建議）、第 33～48 張（第3組：內在力量與情緒價值）
+    var DECK_48 = [
+      // 第 1 組 (1~16)：現況與流月卡點
+      { no: 1,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "霧中看花", kw: "視線受阻", desc: "眼前有些細節還沒看清，容易憑猜測放大擔憂。", tip: "先承認現在看不全貌也沒關係，別急著腦補最壞的劇本。" },
+      { no: 2,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "負重前行", kw: "肩上太沉", desc: "不知不覺背了太多別人的期待或額外責任。", tip: "看看手裡哪些東西其實不是你的責任，先卸下一點。" },
+      { no: 3,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "水面起漣漪", kw: "心緒波動", desc: "外在的一句話或小變化，容易攪動內心的平靜。", tip: "先留意是哪件事觸動了你，波瀾只是暫時的反應。" },
+      { no: 4,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "岔路駐足", kw: "選擇猶豫", desc: "站在兩難之間怕選錯，結果停在原地消耗精力。", tip: "沒有百分之百零風險的選項，先看哪條路比較不委屈你。" },
+      { no: 5,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "緊握沙漏", kw: "想抓緊時間", desc: "怕進度落後或來不及，讓自己處在緊繃狀態。", tip: "時間有自己的流速，一直盯著沙漏只會更焦慮。" },
+      { no: 6,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "門前徘徊", kw: "遲疑未進", desc: "已經走到門口卻還在猶豫要不要推開那扇門。", tip: "觀察自己是在害怕什麼，先釐清恐懼再決定要不要跨步。" },
+      { no: 7,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "回聲繞樑", kw: "反覆思量", desc: "同樣的念頭在腦海裡轉了好幾圈，卻還沒落地。", tip: "想太多不等於有進展，把想法寫下來或說出來會清楚很多。" },
+      { no: 8,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "逆風頂帽", kw: "外界阻力", desc: "這段時間外部節奏或他人反應不如預期順暢。", tip: "逆風時壓低重心、穩住步伐，比硬要頂著風衝刺更省力。" },
+      { no: 9,  group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "玻璃牆隔閡", kw: "溝通落差", desc: "心裡明明有話想說，卻覺得對方聽不懂或沒接住。", tip: "先用簡單清楚的語句表達核心需求，避免拐彎抹角。" },
+      { no: 10, group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "燈火未明", kw: "方向模糊", desc: "中長期的藍圖還不夠清晰，讓人容易感到沒安全感。", tip: "看不清遠方時，就把注意力收回到眼前這一個星期。" },
+      { no: 11, group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "舊衣難捨", kw: "執著過往", desc: "對過去的做法或習慣還有留戀，影響了現在的調整。", tip: "感謝過去曾經幫過你的經驗，但現在可以允許新做法進場。" },
+      { no: 12, group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "弦繃太緊", kw: "過度自律", desc: "對自己要求太高、太緊繃，神經一直處於戒備。", tip: "弦繃太緊會斷，適度鬆開一點，才能彈出舒服的聲音。" },
+      { no: 13, group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "潮汐退去", kw: "能量低潮", desc: "最近精神與動力有點退潮，做事容易覺得提不起勁。", tip: "低潮是身體與心靈在整理庫存，不是你失去能力了。" },
+      { no: 14, group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "鏡中倒影", kw: "自我投射", desc: "容易把外界的臉色或事件，直接投射成對自己的評價。", tip: "把別人的課題還給別人，看清楚哪些才是你真正該在意的。" },
+      { no: 15, group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "雜音干擾", kw: "訊息過載", desc: "聽了太多意見與雜音，反而聽不見自己真實的聲音。", tip: "關掉一些不必要的聲音，給自己一段安靜的獨處。" },
+      { no: 16, group: 1, cls: "g1", pos: "第1組 · ① 現況與流月卡點", name: "半開窗櫺", kw: "保留退路", desc: "心裡還留著一絲保留或防備，還沒完全投入當下。", tip: "不用勉強自己全盤敞開，先從自己覺得安全的小範圍開始。" },
+
+      // 第 2 組 (17~32)：破局與行動建議
+      { no: 17, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "新芽破土", kw: "微小的開始", desc: "不用一次長成大樹，先踏出今天最輕鬆的一小步。", tip: "先挑最小、最沒壓力的那一小步開始就好。" },
+      { no: 18, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "指南針微調", kw: "重新對焦", desc: "外界聲音太多時，問問自己什麼才真的讓人自在。", tip: "把焦點拉回自己身上，聽聽內心真正的感受。" },
+      { no: 19, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "風鈴微響", kw: "順勢而為", desc: "越用力抓越緊，不如順著當下的節奏調整步伐。", tip: "少一點硬要控制的力氣，讓事情自然流動。" },
+      { no: 20, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "雲散見晴", kw: "換個角度", desc: "卡住時換個高度或找人聊聊，眼前的風景會不一樣。", tip: "迷霧只是暫時的視角，換個角度光就會進來。" },
+      { no: 21, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "落葉歸根", kw: "適時割捨", desc: "放下不再適合的執著，才能幫未來留出呼吸的空間。", tip: "適度放下多餘負擔，空出位置迎向新能量。" },
+      { no: 22, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "整理書桌", kw: "化繁為簡", desc: "把混亂的待辦事項分類，只留眼前最關鍵的一兩項。", tip: "先清出一個小角落，秩序感會帶動你的行動力。" },
+      { no: 23, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "試探水溫", kw: "小步測試", desc: "不急著一次梭哈，先用低成本的方式試試看反應。", tip: "先小規模試水溫，邊走邊看、邊做邊調整最穩當。" },
+      { no: 24, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "畫出界線", kw: "溫柔說不", desc: "清楚劃出自己的時間與能量界線，才是長久相處之道。", tip: "用溫和但堅定的語氣說出你的界線，這是保護自己。" },
+      { no: 25, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "借光前行", kw: "善用資源", desc: "不必什麼都靠自己摸索，向經驗豐富的人或工具借力。", tip: "問問身邊懂的人或找現成好用的方法，能少走很多冤枉路。" },
+      { no: 26, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "暫停呼吸", kw: "先緩一緩", desc: "在按下確認鍵或說出氣話之前，先停頓十秒鐘。", tip: "給自己一點緩衝時間，等情緒降溫後再做決定會更準。" },
+      { no: 27, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "重排作息", kw: "調整節奏", desc: "從吃飯、睡覺與休息時間重新對齊，身體順了心就穩。", tip: "今天先從準時吃飯或早一點休息開始調整節奏。" },
+      { no: 28, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "直視核心", kw: "抓出重點", desc: "把枝微末節放一邊，直接問自己這件事最核心的目的是什麼。", tip: "鎖定最核心的那一件事，其他先排在後面。" },
+      { no: 29, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "換條小徑", kw: "繞路而行", desc: "正門走不通時，走一條輕鬆的小路反而更快到達。", tip: "換個方法或換個切入點，不必死守原本那一套。" },
+      { no: 30, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "寫下清單", kw: "外化思緒", desc: "把腦中的擔心寫成具體文字，看清楚哪些可控、哪些不可控。", tip: "把心裡的煩惱寫出來，看得見的煩惱就沒那麼嚇人。" },
+      { no: 31, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "溫和開口", kw: "坦誠溝通", desc: "用「我現在的感覺是……」代替指責，更容易被聽見。", tip: "把「你怎麼……」改成「我最近覺得……」，對話會更順。" },
+      { no: 32, group: 2, cls: "g2", pos: "第2組 · ② 破局與行動建議", name: "留白半日", kw: "刻意放空", desc: "刻意留出一段沒有任務的時間，讓靈感與元氣自然回流。", tip: "今天排一段什麼事都不必做的空白時間給自己。" },
+
+      // 第 3 組 (33~48)：內在力量與情緒價值
+      { no: 33, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "暖燈守夜", kw: "溫柔陪伴", desc: "你已經撐過很多看不見的辛苦，允許自己把責任放輕一點。", tip: "先照顧好自己的疲憊，慢一點也沒關係。" },
+      { no: 34, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "水面映月", kw: "靜下心看", desc: "心起波瀾時先別急著下定論，等水紋慢下來答案會浮現。", tip: "先讓呼吸慢下來，看清楚情緒背後的提醒。" },
+      { no: 35, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "甘甜回蘊", kw: "累積發酵", desc: "看似還沒看到回報的努力，正在底層悄悄釀造。", tip: "給這件事一點發酵的時間，現在未必是全貌。" },
+      { no: 36, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "晨光灑落", kw: "重啟能量", desc: "不管昨天如何，今天都是新的起點，相信自己的光。", tip: "帶著一份溫柔的信任出發，你比想像中有力量。" },
+      { no: 37, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "厚土承載", kw: "穩定底氣", desc: "你經歷過的風雨都化成了沉穩的底氣，能穩穩接住自己。", tip: "相信你其實比自己以為的更穩健，有能力承受與轉化。" },
+      { no: 38, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "茶香暖心", kw: "安頓身心", desc: "一杯溫熱飲品的片刻，就能讓緊繃的神經慢慢舒展。", tip: "給自己倒杯溫水或熱茶，好好坐下來喘口氣。" },
+      { no: 39, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "星子眨眼", kw: "微光指引", desc: "就算黑夜裡沒有探照燈，也有細小的星光陪著你走。", tip: "就算只有一點點希望或好心情，也值得被珍惜。" },
+      { no: 40, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "青苔鋪綠", kw: "靜靜生長", desc: "不需要喧嘩與掌聲，安靜生長也是一種真實的力量。", tip: "不張揚、不急躁，照著自己的步調長出綠意就很棒。" },
+      { no: 41, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "擁抱自己", kw: "自我接納", desc: "把對別人的體諒分一點給自己，你不需要完美才值得被愛。", tip: "今天對自己說一句：我已經做得夠好了。" },
+      { no: 42, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "微風拂面", kw: "輕盈自在", desc: "卸下不必要的重擔後，整個人會重新感到輕盈與呼吸順暢。", tip: "允許自己輕鬆一點，快樂不需要先通過嚴格考試。" },
+      { no: 43, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "晚霞餘溫", kw: "溫柔收尾", desc: "一天的尾聲有它獨特的柔和，過去的疲憊正在慢慢退場。", tip: "給今天的自己一個溫柔的句點，明天又是新的一頁。" },
+      { no: 44, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "種子沉睡", kw: "蓄力待發", desc: "安靜不是停滯，而是種子在土裡儲備發芽的能量。", tip: "現在的安靜是在幫未來的開花儲備力氣。" },
+      { no: 45, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "晴空一碧", kw: "心境開闊", desc: "當你願意放下執念，心裡的天空自然會變得寬闊明亮。", tip: "試著把眼光放遠一點，很多事其實沒有那麼沉重。" },
+      { no: 46, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "安心歸巢", kw: "回到港灣", desc: "無論外面怎麼奔波，心裡總有一個地方能讓你安心回來。", tip: "讓心回到最自在、最沒有防備的地方休息一下。" },
+      { no: 47, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "甜果初熟", kw: "收穫預兆", desc: "用心灌溉的日常正在慢慢結出讓人安心的甜味。", tip: "留意生活裡那些微小的甜頭，它們正在回應你的用心。" },
+      { no: 48, group: 3, cls: "g3", pos: "第3組 · ③ 內在力量與情緒價值", name: "自在同行", kw: "與己為伴", desc: "你永遠是自己最可靠的夥伴，陪著自己走過每一段路。", tip: "帶著這份陪伴感往前走，你不是一個人孤單在面對。" }
     ];
 
-    var POS = ["① 現況與流月卡點", "② 破局與行動建議", "③ 內在力量與情緒價值"];
     var picked = [];
 
     function esc(s) {
@@ -286,13 +334,22 @@
       return { gz: STEMS[hStemIdx] + BRANCHES[bIdx], stem: STEMS[hStemIdx] };
     }
 
-    function draw3() {
-      var copy = CARDS.slice();
-      picked = [];
-      for (var i = 0; i < 3; i++) {
-        var idx = Math.floor(Math.random() * copy.length);
-        picked.push({ pos: POS[i], card: copy.splice(idx, 1)[0] });
+    function pickOneFromGroup(groupNum) {
+      var list = [];
+      for (var i = 0; i < DECK_48.length; i++) {
+        if (DECK_48[i].group === groupNum) list.push(DECK_48[i]);
       }
+      var idx = Math.floor(Math.random() * list.length);
+      return list[idx];
+    }
+
+    // 分 3 組抽牌：第1組(1~16)抽1張、第2組(17~32)抽1張、第3組(33~48)抽1張
+    function draw3Groups() {
+      picked = [
+        pickOneFromGroup(1),
+        pickOneFromGroup(2),
+        pickOneFromGroup(3)
+      ];
     }
 
     function refreshAll() {
@@ -351,22 +408,23 @@
       var qLabel = q ? ("「" + q + "」") : "這件事";
       var cHtml = "";
       for (var j = 0; j < picked.length; j++) {
-        var item = picked[j];
-        cHtml += '<div class="card">' +
-          '<div class="card-pos">' + esc(item.pos) + '</div>' +
-          '<div class="card-title">' + esc(item.card.name) + ' · ' + esc(item.card.kw) + '</div>' +
-          '<div>' + esc(item.card.desc) + '</div>' +
-          '<div class="card-tip">💡 連結 ' + esc(qLabel) + '（' + esc(flowMonthGod) + '月）：' + esc(item.card.tip) + '</div>' +
+        var card = picked[j];
+        cHtml += '<div class="card ' + card.cls + '">' +
+          '<div class="card-pos">' + esc(card.pos) + '</div>' +
+          '<span class="card-no">第 ' + card.no + ' / 48 張</span>' +
+          '<div class="card-title">' + esc(card.name) + ' · ' + esc(card.kw) + '</div>' +
+          '<div>' + esc(card.desc) + '</div>' +
+          '<div class="card-tip">💡 連結 ' + esc(qLabel) + '（' + esc(flowMonthGod) + '月）：' + esc(card.tip) + '</div>' +
         '</div>';
       }
       document.getElementById("cardsBox").innerHTML = cHtml;
 
       var rHtml = "<p><strong>先聽見你的提問：</strong>你提到" + esc(q ? ("「" + q + "」") : "想看看現在的狀態與方向") + "。把這份在意放在心上，不用急著立刻給出完美答案。</p>" +
         "<p><strong>流年與當下流月：</strong>目前是 <strong>" + flowYM.yGZ + "</strong> 流年、<strong>" + flowYM.mGZ + "（" + flowMonthGod + "）</strong> 流月。" + esc(monthAdvice) + "</p>" +
-        "<p><strong>三張牌的提醒：</strong><br>" +
-        "· " + esc(picked[0].card.name) + "：" + esc(picked[0].card.tip) + "<br>" +
-        "· " + esc(picked[1].card.name) + "：" + esc(picked[1].card.tip) + "<br>" +
-        "· " + esc(picked[2].card.name) + "：" + esc(picked[2].card.tip) + "</p>";
+        "<p><strong>48 張牌分 3 組抽出的提醒：</strong><br>" +
+        "· " + esc(picked[0].pos) + " → <strong>" + esc(picked[0].name) + "</strong>（第" + picked[0].no + "張）：" + esc(picked[0].tip) + "<br>" +
+        "· " + esc(picked[1].pos) + " → <strong>" + esc(picked[1].name) + "</strong>（第" + picked[1].no + "張）：" + esc(picked[1].tip) + "<br>" +
+        "· " + esc(picked[2].pos) + " → <strong>" + esc(picked[2].name) + "</strong>（第" + picked[2].no + "張）：" + esc(picked[2].tip) + "</p>";
       document.getElementById("replyBox").innerHTML = rHtml;
 
       var promptText =
@@ -376,17 +434,17 @@
         (gv === "male" ? "男命" : "女命") + "，出生於 " + dv + "，日主 " + day.stem + "（" + ELEM[day.stem] + "）\n" +
         "四柱：" + four[0].gz + " / " + four[1].gz + " / " + four[2].gz + " / " + four[3].gz + "\n" +
         "流年 " + flowYM.yGZ + "（" + flowYearGod + "），當下流月 " + flowYM.mGZ + "（" + flowMonthGod + "）\n\n" +
-        "【三張開悟卡】\n" +
-        "1. " + picked[0].pos + "：" + picked[0].card.name + "（" + picked[0].card.desc + "）\n" +
-        "2. " + picked[1].pos + "：" + picked[1].card.name + "（" + picked[1].card.desc + "）\n" +
-        "3. " + picked[2].pos + "：" + picked[2].card.name + "（" + picked[2].card.desc + "）\n\n" +
+        "【48 張開悟卡分 3 組抽牌結果】\n" +
+        "1. " + picked[0].pos + "（第" + picked[0].no + "張）：" + picked[0].name + "（" + picked[0].desc + "）\n" +
+        "2. " + picked[1].pos + "（第" + picked[1].no + "張）：" + picked[1].name + "（" + picked[1].desc + "）\n" +
+        "3. " + picked[2].pos + "（第" + picked[2].no + "張）：" + picked[2].name + "（" + picked[2].desc + "）\n\n" +
         "【回覆要求】\n" +
-        "先接住情緒，再緊扣提問連結流月與三張牌給出具體微調建議與情緒價值，避免空泛套話。";
+        "先接住情緒，再緊扣提問連結流月與三組牌卡給出具體微調建議與情緒價值，避免空泛套話。";
       document.getElementById("promptOut").textContent = promptText;
     }
 
     window.addEventListener("load", function () {
-      draw3();
+      draw3Groups();
       refreshAll();
 
       document.getElementById("bDate").addEventListener("change", refreshAll);
@@ -394,7 +452,7 @@
       document.getElementById("bGender").addEventListener("change", refreshAll);
       document.getElementById("qInput").addEventListener("input", refreshAll);
       document.getElementById("drawBtn").addEventListener("click", function () {
-        draw3();
+        draw3Groups();
         refreshAll();
       });
 
