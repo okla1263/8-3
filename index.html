@@ -8,14 +8,15 @@
     * { box-sizing: border-box; }
     html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; }
     body {
-      padding: 18px 14px 60px;
+      padding: 18px 14px 64px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
       color: #2D2A32;
       background-color: #FFF9EE;
       background-image:
-        radial-gradient(circle at 12% 10%, rgba(255, 183, 3, 0.18) 0%, transparent 30%),
-        radial-gradient(circle at 88% 16%, rgba(46, 196, 182, 0.18) 0%, transparent 30%),
-        radial-gradient(circle at 82% 85%, rgba(255, 122, 89, 0.16) 0%, transparent 32%);
+        radial-gradient(circle at 12% 10%, rgba(255, 183, 3, 0.22) 0%, transparent 32%),
+        radial-gradient(circle at 88% 16%, rgba(46, 196, 182, 0.22) 0%, transparent 32%),
+        radial-gradient(circle at 82% 85%, rgba(255, 122, 89, 0.20) 0%, transparent 34%),
+        radial-gradient(circle at 18% 82%, rgba(78, 168, 222, 0.20) 0%, transparent 32%);
       line-height: 1.65;
     }
     .wrap { max-width: 820px; width: 100%; margin: 0 auto; }
@@ -28,7 +29,7 @@
       box-shadow: 0 6px 0 #2D2A32;
       overflow: hidden;
     }
-    h1 { margin: 0 0 8px; font-size: 1.6rem; font-weight: 900; }
+    h1 { margin: 0 0 8px; font-size: 1.55rem; font-weight: 900; }
     h2 { margin: 0 0 14px; font-size: 1.15rem; font-weight: 900; }
     p { margin: 0 0 10px; color: #5C5666; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 14px; }
@@ -47,15 +48,29 @@
       border-radius: 999px; padding: 5px 12px; font-size: 0.84rem; font-weight: 700; cursor: pointer;
     }
     .bazi-box {
-      background: #E8FAF8; border: 2px dashed #2EC4B6; border-radius: 16px; padding: 14px; margin-top: 12px;
+      background: #E8FAF8; border: 2px dashed #2EC4B6; border-radius: 18px; padding: 14px; margin-top: 14px;
     }
-    .pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 0; }
+    .bazi-intro {
+      font-size: 0.86rem; color: #3D4C52; background: rgba(255,255,255,0.78);
+      border-radius: 12px; padding: 8px 12px; margin: 8px 0 12px;
+    }
+    .pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 10px 0 12px; }
     .pillar {
-      background: #fff; border: 2px solid #2D2A32; border-radius: 12px; padding: 8px; text-align: center;
+      background: #fff; border: 2px solid #2D2A32; border-radius: 14px; padding: 10px; text-align: center;
     }
-    .p-name { font-size: 0.78rem; color: #6B6575; font-weight: 700; }
-    .p-gz { font-size: 1.25rem; font-weight: 900; }
-    .p-sub { font-size: 0.78rem; color: #FF7A59; font-weight: 700; }
+    .p-name { font-size: 0.8rem; color: #6B6575; font-weight: 800; }
+    .p-gz { font-size: 1.3rem; font-weight: 900; margin: 2px 0; }
+    .p-sub { font-size: 0.82rem; color: #FF7A59; font-weight: 800; }
+    .p-hint { font-size: 0.76rem; color: #5C5666; margin-top: 4px; line-height: 1.4; }
+    .flow-line {
+      font-weight: 800; font-size: 0.9rem; background: #FFF8E1;
+      border: 1.5px solid #2D2A32; border-radius: 12px; padding: 8px 12px; margin-bottom: 10px;
+    }
+    .bazi-advice {
+      background: #FFFFFF; border: 2px solid #2D2A32; border-left: 6px solid #2EC4B6;
+      border-radius: 14px; padding: 12px 14px; font-size: 0.9rem; color: #2D2A32;
+    }
+    .bazi-advice strong { color: #0F766E; }
     .q-now {
       background: #FFF8E1; border: 2px solid #2D2A32; border-radius: 12px; padding: 10px 12px;
       margin-bottom: 12px; font-size: 0.9rem; font-weight: 700;
@@ -133,9 +148,13 @@
       <textarea id="qInput" placeholder="寫下你現在心裡想問的事..."></textarea>
 
       <div class="bazi-box">
-        <div id="baziMeta" style="font-weight:700; font-size:0.9rem;">計算中...</div>
+        <div id="baziMeta" style="font-weight:800; font-size:0.95rem;">計算中...</div>
+        <div class="bazi-intro">
+          這四格是由出生年月日與時辰算出的「八字四柱」，代表你不同層面的能量底色，不是死板的宿命判決。
+        </div>
         <div class="pillars" id="pillarsBox"></div>
-        <div id="flowBox" style="font-weight:700; font-size:0.88rem;"></div>
+        <div class="flow-line" id="flowBox"></div>
+        <div class="bazi-advice" id="baziAdviceBox"></div>
       </div>
     </div>
 
@@ -169,6 +188,26 @@
     var GEN = {"木":"火","火":"土","土":"金","金":"水","水":"木"};
     var OVER = {"木":"土","土":"水","水":"火","火":"金","金":"木"};
 
+    var PILLAR_ROLE = [
+      "外在環境與早年規則",
+      "日常步調與做事互動",
+      "你的核心底色（自己）",
+      "內心深處與充電方式"
+    ];
+
+    var GOD_ADVICE = {
+      "比肩": "這個月容易自己扛下太多事、想把節奏握在手裡，建議把任務分一點出去，別讓自己孤軍奮戰。",
+      "劫財": "這個月花費、精力消耗或人際比較感容易升高，先守住自己的預算與心力，別急著跟別人比快。",
+      "食神": "這個月很適合把感受好好說出來、吃頓舒服的飯或做喜歡的事，用自然流露的方式比硬撐更順。",
+      "傷官": "這個月對現狀特別有感、不想被框住，想法多也容易急躁，先給自己留一點緩衝空間再做決定。",
+      "偏財": "這個月機會與變數都比較活絡，但也容易隨手花費或臨時變動，看清真正需要的再出手會更穩。",
+      "正財": "這個月適合把帳目、行程與手邊瑣事整理清楚，踏踏實實穩穩走，比求快更讓人安心。",
+      "七殺": "這個月外界壓力或被推著走的感受較明顯，把眼前的事拆成小步驟一件件處理，就不會被壓垮。",
+      "正官": "這個月比較在意責任、規矩與外界期待，記得留一點不被評判的喘息時間給自己。",
+      "偏印": "這個月思緒容易往深處鑽、喜歡獨處或換個角度想事情，別一個人悶著想太久，適度透透氣。",
+      "正印": "這個月很需要被照顧、被理解與充電，允許自己慢下來補充能量，不需要時時維持完美。"
+    };
+
     var CARDS = [
       { name: "新芽破土", kw: "微小的開始", desc: "不用一次長成大樹，先踏出今天最輕鬆的一小步。", tip: "先挑最小、最沒壓力的那一小步開始就好。" },
       { name: "水面映月", kw: "靜下心看", desc: "心起波瀾時先別急著下定論，等水紋慢下來答案會浮現。", tip: "先讓呼吸慢下來，看清楚情緒背後的提醒。" },
@@ -183,7 +222,6 @@
 
     var POS = ["① 現況與流月卡點", "② 破局與行動建議", "③ 內在力量與情緒價值"];
     var picked = [];
-    var baziInfo = null;
 
     function esc(s) {
       return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -275,35 +313,37 @@
       var flowMonthGod = tenGod(day.stem, flowYM.mStem);
 
       var four = [
-        { n: "年柱", gz: ym.yGZ, sub: tenGod(day.stem, ym.yStem) },
-        { n: "月柱", gz: ym.mGZ, sub: tenGod(day.stem, ym.mStem) },
-        { n: "日柱", gz: day.gz, sub: "日主" + ELEM[day.stem] },
-        { n: "時柱", gz: hr ? hr.gz : "未定", sub: hr ? tenGod(day.stem, hr.stem) : "略過" }
+        { n: "年柱", gz: ym.yGZ, sub: tenGod(day.stem, ym.yStem), hint: PILLAR_ROLE[0] },
+        { n: "月柱", gz: ym.mGZ, sub: tenGod(day.stem, ym.mStem), hint: PILLAR_ROLE[1] },
+        { n: "日柱", gz: day.gz, sub: "日主" + ELEM[day.stem], hint: PILLAR_ROLE[2] },
+        { n: "時柱", gz: hr ? hr.gz : "未定", sub: hr ? tenGod(day.stem, hr.stem) : "略過時辰", hint: PILLAR_ROLE[3] }
       ];
 
-      baziInfo = {
-        dv: dv,
-        gText: gv === "male" ? "男命" : "女命",
-        dStem: day.stem,
-        dElem: ELEM[day.stem],
-        four: four,
-        flowYearGZ: flowYM.yGZ,
-        flowYearGod: flowYearGod,
-        flowMonthGZ: flowYM.mGZ,
-        flowMonthGod: flowMonthGod
-      };
-
       document.getElementById("baziMeta").textContent =
-        "日主：" + day.stem + "（" + ELEM[day.stem] + "） · " + baziInfo.gText;
+        "日主：" + day.stem + "（" + ELEM[day.stem] + "） · " + (gv === "male" ? "男命" : "女命");
 
       var pHtml = "";
       for (var i = 0; i < four.length; i++) {
-        pHtml += '<div class="pillar"><div class="p-name">' + four[i].n + '</div><div class="p-gz">' + four[i].gz + '</div><div class="p-sub">' + four[i].sub + '</div></div>';
+        pHtml += '<div class="pillar">' +
+          '<div class="p-name">' + four[i].n + '</div>' +
+          '<div class="p-gz">' + four[i].gz + '</div>' +
+          '<div class="p-sub">' + four[i].sub + '</div>' +
+          '<div class="p-hint">' + four[i].hint + '</div>' +
+        '</div>';
       }
       document.getElementById("pillarsBox").innerHTML = pHtml;
 
       document.getElementById("flowBox").textContent =
         "流年：" + flowYM.yGZ + "（" + flowYearGod + "）｜ 當下流月：" + flowYM.mGZ + "（" + flowMonthGod + "）";
+
+      var monthAdvice = GOD_ADVICE[flowMonthGod] || "順著當下的節奏慢慢調整，不必急著給自己太大壓力。";
+      var issueLine = q
+        ? ("針對你問的「" + esc(q) + "」，在 " + flowYM.mGZ + "（" + flowMonthGod + "）月裡，先把心裡的焦慮放輕一點，看清什麼是現在能做的事。")
+        : ("你目前尚未輸入特定提問；若最近有想釐清的事，可以在上面寫下來，下面的牌卡與建議會直接扣合你的問題。");
+
+      document.getElementById("baziAdviceBox").innerHTML =
+        "<strong>流月說明與建議：</strong>" + esc(monthAdvice) + "<br>" +
+        "<strong>與你的提問連結：</strong>" + issueLine;
 
       document.getElementById("qBanner").innerHTML =
         q ? ("目前對齊的提問：「" + esc(q) + "」") : "目前對齊的提問：尚未輸入特定問題（以當下整體狀態與流月節奏為你抽牌）";
@@ -322,7 +362,7 @@
       document.getElementById("cardsBox").innerHTML = cHtml;
 
       var rHtml = "<p><strong>先聽見你的提問：</strong>你提到" + esc(q ? ("「" + q + "」") : "想看看現在的狀態與方向") + "。把這份在意放在心上，不用急著立刻給出完美答案。</p>" +
-        "<p><strong>流年與當下流月：</strong>目前是 <strong>" + flowYM.yGZ + "</strong> 流年、<strong>" + flowYM.mGZ + "（" + flowMonthGod + "）</strong> 流月，這段時間適合順著自己的步調調整，不需要硬撐。</p>" +
+        "<p><strong>流年與當下流月：</strong>目前是 <strong>" + flowYM.yGZ + "</strong> 流年、<strong>" + flowYM.mGZ + "（" + flowMonthGod + "）</strong> 流月。" + esc(monthAdvice) + "</p>" +
         "<p><strong>三張牌的提醒：</strong><br>" +
         "· " + esc(picked[0].card.name) + "：" + esc(picked[0].card.tip) + "<br>" +
         "· " + esc(picked[1].card.name) + "：" + esc(picked[1].card.tip) + "<br>" +
@@ -333,7 +373,7 @@
         "請用溫暖、有畫面感且不說教的語氣，結合以下資訊為我做深度解析：\n\n" +
         "【提問】\n" + (q || "我想看清當下狀態與流月節奏") + "\n\n" +
         "【八字與流月】\n" +
-        baziInfo.gText + "，出生於 " + dv + "，日主 " + day.stem + "（" + ELEM[day.stem] + "）\n" +
+        (gv === "male" ? "男命" : "女命") + "，出生於 " + dv + "，日主 " + day.stem + "（" + ELEM[day.stem] + "）\n" +
         "四柱：" + four[0].gz + " / " + four[1].gz + " / " + four[2].gz + " / " + four[3].gz + "\n" +
         "流年 " + flowYM.yGZ + "（" + flowYearGod + "），當下流月 " + flowYM.mGZ + "（" + flowMonthGod + "）\n\n" +
         "【三張開悟卡】\n" +
