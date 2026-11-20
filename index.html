@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>流月與開悟卡 · 溫柔占卜手帳</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; margin: 0; padding: 0; }
+    body {
+      padding: 18px 14px 60px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      color: #2D2A32;
+      background-color: #FFF9EE;
+      background-image:
+        radial-gradient(circle at 12% 10%, rgba(255, 183, 3, 0.18) 0%, transparent 30%),
+        radial-gradient(circle at 88% 16%, rgba(46, 196, 182, 0.18) 0%, transparent 30%),
+        radial-gradient(circle at 82% 85%, rgba(255, 122, 89, 0.16) 0%, transparent 32%);
+      line-height: 1.65;
+    }
+    .wrap { max-width: 820px; width: 100%; margin: 0 auto; }
+    .box {
+      background: #FFFFFF;
+      border: 2.5px solid #2D2A32;
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 0 #2D2A32;
+      overflow: hidden;
+    }
+    h1 { margin: 0 0 8px; font-size: 1.6rem; font-weight: 900; }
+    h2 { margin: 0 0 14px; font-size: 1.15rem; font-weight: 900; }
+    p { margin: 0 0 10px; color: #5C5666; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 14px; }
+    .field { min-width: 0; }
+    label { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%; max-width: 100%; min-width: 0; display: block;
+      font-family: inherit; font-size: 0.95rem; color: #2D2A32;
+      background: #FFFDF8; border: 2px solid #D7D0C0; border-radius: 12px; padding: 10px 12px;
+    }
+    input[type="date"] { -webkit-appearance: none; appearance: none; min-height: 44px; }
+    textarea { min-height: 84px; resize: vertical; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .tag {
+      border: 2px solid #2D2A32; background: #EAF6FF; color: #2D2A32;
+      border-radius: 999px; padding: 5px 12px; font-size: 0.84rem; font-weight: 700; cursor: pointer;
+    }
+    .bazi-box {
+      background: #E8FAF8; border: 2px dashed #2EC4B6; border-radius: 16px; padding: 14px; margin-top: 12px;
+    }
+    .pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 0; }
+    .pillar {
+      background: #fff; border: 2px solid #2D2A32; border-radius: 12px; padding: 8px; text-align: center;
+    }
+    .p-name { font-size: 0.78rem; color: #6B6575; font-weight: 700; }
+    .p-gz { font-size: 1.25rem; font-weight: 900; }
+    .p-sub { font-size: 0.78rem; color: #FF7A59; font-weight: 700; }
+    .q-now {
+      background: #FFF8E1; border: 2px solid #2D2A32; border-radius: 12px; padding: 10px 12px;
+      margin-bottom: 12px; font-size: 0.9rem; font-weight: 700;
+    }
+    .btn {
+      background: #FF7A59; color: #fff; border: 2px solid #2D2A32; border-radius: 999px;
+      padding: 10px 18px; font-size: 0.95rem; font-weight: 900; cursor: pointer;
+      box-shadow: 0 3px 0 #2D2A32; margin-right: 8px; margin-bottom: 8px;
+    }
+    .btn-sub {
+      background: #FFF8E1; color: #2D2A32; border: 2px solid #2D2A32; border-radius: 999px;
+      padding: 9px 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 8px;
+    }
+    .cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .card { border: 2px solid #2D2A32; border-radius: 16px; padding: 14px; background: #FFF0EB; }
+    .card-pos { font-size: 0.8rem; font-weight: 900; background: #fff; display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1.5px solid #2D2A32; margin-bottom: 6px; }
+    .card-title { font-size: 1.1rem; font-weight: 900; margin: 4px 0; }
+    .card-tip { margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(45,42,50,0.25); font-weight: 700; font-size: 0.9rem; }
+    .reply-box { background: #FFFDF7; border: 2px solid #2D2A32; border-radius: 16px; padding: 14px; font-size: 0.95rem; }
+    .admin-toggle { margin-top: 24px; text-align: center; }
+    .admin-btn { background: none; border: none; color: #6B6575; font-size: 0.78rem; text-decoration: underline; cursor: pointer; opacity: 0.6; }
+    .admin-panel { display: none; margin-top: 12px; text-align: left; }
+    .admin-panel.show { display: block; }
+    pre { background: #23202A; color: #F7F4FF; padding: 12px; border-radius: 12px; font-size: 0.8rem; white-space: pre-wrap; max-height: 240px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="box">
+      <h1>🏮 流月與開悟卡 · 溫柔占卜手帳</h1>
+      <p>輸入生辰與此刻想問的事，搭配當下流月與 3 張開悟卡，看看當下的節奏與溫柔轉念。</p>
+    </div>
+
+    <div class="box">
+      <h2>1. 填寫生辰與想問的問題</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="bDate">出生日期（西元）</label>
+          <input type="date" id="bDate" value="1980-11-30" />
+        </div>
+        <div class="field">
+          <label for="bHour">出生時辰</label>
+          <select id="bHour">
+            <option value="unknown">不確定時辰</option>
+            <option value="23">子時 (23:00-00:59)</option>
+            <option value="1">丑時 (01:00-02:59)</option>
+            <option value="3">寅時 (03:00-04:59)</option>
+            <option value="5">卯時 (05:00-06:59)</option>
+            <option value="7">辰時 (07:00-08:59)</option>
+            <option value="9">巳時 (09:00-10:59)</option>
+            <option value="11" selected>午時 (11:00-12:59)</option>
+            <option value="13">未時 (13:00-14:59)</option>
+            <option value="15">申時 (15:00-16:59)</option>
+            <option value="17">酉時 (17:00-18:59)</option>
+            <option value="19">戌時 (19:00-20:59)</option>
+            <option value="21">亥時 (21:00-22:59)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bGender">性別</label>
+          <select id="bGender">
+            <option value="male">男命</option>
+            <option value="female">女命</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="qInput">你想問什麼？（輸入後下面的抽卡與回應會跟著連結這件事）</label>
+      <div class="tags">
+        <button type="button" class="tag" data-t="最近在工作與方向選擇上很猶豫：">💼 工作方向</button>
+        <button type="button" class="tag" data-t="這陣子在關係與溝通上覺得卡卡的：">💞 關係溝通</button>
+        <button type="button" class="tag" data-t="心裡容易內耗、想找回平靜的節奏：">☁️ 內耗轉念</button>
+        <button type="button" class="tag" data-t="關於金錢與下一步規劃想看清：">🌱 金錢節奏</button>
+      </div>
+      <textarea id="qInput" placeholder="寫下你現在心裡想問的事..."></textarea>
+
+      <div class="bazi-box">
+        <div id="baziMeta" style="font-weight:700; font-size:0.9rem;">計算中...</div>
+        <div class="pillars" id="pillarsBox"></div>
+        <div id="flowBox" style="font-weight:700; font-size:0.88rem;"></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>2. 帶著問題抽 3 張開悟卡</h2>
+      <div class="q-now" id="qBanner">目前對齊的提問：尚未輸入特定問題</div>
+      <button type="button" class="btn" id="drawBtn">✨ 洗牌並抽 3 張牌</button>
+      <div class="cards" id="cardsBox"></div>
+    </div>
+
+    <div class="box">
+      <h2>3. 流月 × 牌卡 × 你的提問回應</h2>
+      <div class="reply-box" id="replyBox"></div>
+    </div>
+
+    <div class="admin-toggle">
+      <button type="button" class="admin-btn" id="adminBtn">創作者指令區</button>
+      <div class="box admin-panel" id="adminPanel">
+        <pre id="promptOut"></pre>
+        <button type="button" class="btn-sub" id="copyBtn">複製完整指令</button>
+        <span id="copyMsg" style="font-weight:700; color:#137A6F;"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var STEMS = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+    var BRANCHES = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+    var ELEM = {"甲":"木","乙":"木","丙":"火","丁":"火","戊":"土","己":"土","庚":"金","辛":"金","壬":"水","癸":"水"};
+    var POL = {"甲":"陽","乙":"陰","丙":"陽","丁":"陰","戊":"陽","己":"陰","庚":"陽","辛":"陰","壬":"陽","癸":"陰"};
+    var GEN = {"木":"火","火":"土","土":"金","金":"水","水":"木"};
+    var OVER = {"木":"土","土":"水","水":"火","火":"金","金":"木"};
+
+    var CARDS = [
+      { name: "新芽破土", kw: "微小的開始", desc: "不用一次長成大樹，先踏出今天最輕鬆的一小步。", tip: "先挑最小、最沒壓力的那一小步開始就好。" },
+      { name: "水面映月", kw: "靜下心看", desc: "心起波瀾時先別急著下定論，等水紋慢下來答案會浮現。", tip: "先讓呼吸慢下來，看清楚情緒背後的提醒。" },
+      { name: "暖燈守夜", kw: "溫柔陪伴", desc: "你已經撐過很多看不見的辛苦，允許自己把責任放輕一點。", tip: "先照顧好自己的疲憊，慢一點也沒關係。" },
+      { name: "風鈴微響", kw: "順勢而為", desc: "越用力抓越緊，不如順著當下的節奏調整步伐。", tip: "少一點硬要控制的力氣，讓事情自然流動。" },
+      { name: "甘甜回蘊", kw: "累積發酵", desc: "看似還沒看到回報的努力，正在底層悄悄釀造。", tip: "給這件事一點發酵的時間，現在未必是全貌。" },
+      { name: "指南針微調", kw: "回到自己", desc: "外界聲音太多時，問問自己什麼才真的讓人自在。", tip: "把焦點拉回自己身上，聽聽內心真正的感受。" },
+      { name: "雲散見晴", kw: "換個角度", desc: "卡住時換個高度或找人聊聊，眼前的風景會不一樣。", tip: "迷霧只是暫時的視角，換個角度光就會進來。" },
+      { name: "落葉歸根", kw: "適時割捨", desc: "放下不再適合的執著，才能幫未來留出呼吸的空間。", tip: "適度放下多餘負擔，空出位置迎向新能量。" },
+      { name: "晨光灑落", kw: "重啟能量", desc: "不管昨天如何，今天都是新的起點，相信自己的光。", tip: "帶著一份溫柔的信任出發，你比想像中有力量。" }
+    ];
+
+    var POS = ["① 現況與流月卡點", "② 破局與行動建議", "③ 內在力量與情緒價值"];
+    var picked = [];
+    var baziInfo = null;
+
+    function esc(s) {
+      return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    function tenGod(dStem, tStem) {
+      if (dStem === tStem) return "比肩";
+      var dE = ELEM[dStem], tE = ELEM[tStem], same = (POL[dStem] === POL[tStem]);
+      if (dE === tE) return same ? "比肩" : "劫財";
+      if (GEN[dE] === tE) return same ? "食神" : "傷官";
+      if (GEN[tE] === dE) return same ? "偏印" : "正印";
+      if (OVER[dE] === tE) return same ? "偏財" : "正財";
+      if (OVER[tE] === dE) return same ? "七殺" : "正官";
+      return "";
+    }
+
+    function calcYM(y, m, d) {
+      var gy = (m < 2 || (m === 2 && d < 4)) ? y - 1 : y;
+      var md = m * 100 + d;
+      var mIdx = 1;
+      if (md >= 1207) mIdx = 0;
+      else if (md >= 1107) mIdx = 11;
+      else if (md >= 1008) mIdx = 10;
+      else if (md >= 908) mIdx = 9;
+      else if (md >= 808) mIdx = 8;
+      else if (md >= 707) mIdx = 7;
+      else if (md >= 606) mIdx = 6;
+      else if (md >= 506) mIdx = 5;
+      else if (md >= 405) mIdx = 4;
+      else if (md >= 306) mIdx = 3;
+      else if (md >= 204) mIdx = 2;
+      else if (md >= 106) mIdx = 1;
+      else mIdx = 0;
+
+      var yStemIdx = (((gy - 1984) % 10) + 10) % 10;
+      var yBrIdx = (((gy - 1984) % 12) + 12) % 12;
+      var tigerMap = {0:2,5:2,1:4,6:4,2:6,7:6,3:8,8:8,4:0,9:0};
+      var steps = (((mIdx - 2) % 12) + 12) % 12;
+      var mStemIdx = (tigerMap[yStemIdx] + steps) % 10;
+
+      return {
+        yGZ: STEMS[yStemIdx] + BRANCHES[yBrIdx],
+        yStem: STEMS[yStemIdx],
+        mGZ: STEMS[mStemIdx] + BRANCHES[mIdx],
+        mStem: STEMS[mStemIdx]
+      };
+    }
+
+    function calcDay(y, m, d) {
+      var diff = Math.floor((Date.UTC(y, m - 1, d) - Date.UTC(1984, 1, 2)) / 86400000);
+      var sIdx = ((diff % 10) + 10) % 10;
+      var bIdx = ((diff % 12) + 12) % 12;
+      return { gz: STEMS[sIdx] + BRANCHES[bIdx], stem: STEMS[sIdx], sIdx: sIdx };
+    }
+
+    function calcHour(sIdx, hVal) {
+      if (hVal === "unknown") return null;
+      var h = Number(hVal);
+      var bIdx = (h === 23 || h === 0) ? 0 : Math.floor((h + 1) / 2);
+      var ratMap = {0:0,5:0,1:2,6:2,2:4,7:4,3:6,8:6,4:8,9:8};
+      var hStemIdx = (ratMap[sIdx] + bIdx) % 10;
+      return { gz: STEMS[hStemIdx] + BRANCHES[bIdx], stem: STEMS[hStemIdx] };
+    }
+
+    function draw3() {
+      var copy = CARDS.slice();
+      picked = [];
+      for (var i = 0; i < 3; i++) {
+        var idx = Math.floor(Math.random() * copy.length);
+        picked.push({ pos: POS[i], card: copy.splice(idx, 1)[0] });
+      }
+    }
+
+    function refreshAll() {
+      var dv = document.getElementById("bDate").value || "1980-11-30";
+      var hv = document.getElementById("bHour").value || "11";
+      var gv = document.getElementById("bGender").value || "male";
+      var q = (document.getElementById("qInput").value || "").trim();
+
+      var p = dv.split("-");
+      var y = Number(p[0]) || 1980, m = Number(p[1]) || 11, d = Number(p[2]) || 30;
+      var ym = calcYM(y, m, d);
+      var day = calcDay(y, m, d);
+      var hr = calcHour(day.sIdx, hv);
+
+      var now = new Date();
+      var flowYM = calcYM(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      var flowYearGod = tenGod(day.stem, flowYM.yStem);
+      var flowMonthGod = tenGod(day.stem, flowYM.mStem);
+
+      var four = [
+        { n: "年柱", gz: ym.yGZ, sub: tenGod(day.stem, ym.yStem) },
+        { n: "月柱", gz: ym.mGZ, sub: tenGod(day.stem, ym.mStem) },
+        { n: "日柱", gz: day.gz, sub: "日主" + ELEM[day.stem] },
+        { n: "時柱", gz: hr ? hr.gz : "未定", sub: hr ? tenGod(day.stem, hr.stem) : "略過" }
+      ];
+
+      baziInfo = {
+        dv: dv,
+        gText: gv === "male" ? "男命" : "女命",
+        dStem: day.stem,
+        dElem: ELEM[day.stem],
+        four: four,
+        flowYearGZ: flowYM.yGZ,
+        flowYearGod: flowYearGod,
+        flowMonthGZ: flowYM.mGZ,
+        flowMonthGod: flowMonthGod
+      };
+
+      document.getElementById("baziMeta").textContent =
+        "日主：" + day.stem + "（" + ELEM[day.stem] + "） · " + baziInfo.gText;
+
+      var pHtml = "";
+      for (var i = 0; i < four.length; i++) {
+        pHtml += '<div class="pillar"><div class="p-name">' + four[i].n + '</div><div class="p-gz">' + four[i].gz + '</div><div class="p-sub">' + four[i].sub + '</div></div>';
+      }
+      document.getElementById("pillarsBox").innerHTML = pHtml;
+
+      document.getElementById("flowBox").textContent =
+        "流年：" + flowYM.yGZ + "（" + flowYearGod + "）｜ 當下流月：" + flowYM.mGZ + "（" + flowMonthGod + "）";
+
+      document.getElementById("qBanner").innerHTML =
+        q ? ("目前對齊的提問：「" + esc(q) + "」") : "目前對齊的提問：尚未輸入特定問題（以當下整體狀態與流月節奏為你抽牌）";
+
+      var qLabel = q ? ("「" + q + "」") : "這件事";
+      var cHtml = "";
+      for (var j = 0; j < picked.length; j++) {
+        var item = picked[j];
+        cHtml += '<div class="card">' +
+          '<div class="card-pos">' + esc(item.pos) + '</div>' +
+          '<div class="card-title">' + esc(item.card.name) + ' · ' + esc(item.card.kw) + '</div>' +
+          '<div>' + esc(item.card.desc) + '</div>' +
+          '<div class="card-tip">💡 連結 ' + esc(qLabel) + '（' + esc(flowMonthGod) + '月）：' + esc(item.card.tip) + '</div>' +
+        '</div>';
+      }
+      document.getElementById("cardsBox").innerHTML = cHtml;
+
+      var rHtml = "<p><strong>先聽見你的提問：</strong>你提到" + esc(q ? ("「" + q + "」") : "想看看現在的狀態與方向") + "。把這份在意放在心上，不用急著立刻給出完美答案。</p>" +
+        "<p><strong>流年與當下流月：</strong>目前是 <strong>" + flowYM.yGZ + "</strong> 流年、<strong>" + flowYM.mGZ + "（" + flowMonthGod + "）</strong> 流月，這段時間適合順著自己的步調調整，不需要硬撐。</p>" +
+        "<p><strong>三張牌的提醒：</strong><br>" +
+        "· " + esc(picked[0].card.name) + "：" + esc(picked[0].card.tip) + "<br>" +
+        "· " + esc(picked[1].card.name) + "：" + esc(picked[1].card.tip) + "<br>" +
+        "· " + esc(picked[2].card.name) + "：" + esc(picked[2].card.tip) + "</p>";
+      document.getElementById("replyBox").innerHTML = rHtml;
+
+      var promptText =
+        "請用溫暖、有畫面感且不說教的語氣，結合以下資訊為我做深度解析：\n\n" +
+        "【提問】\n" + (q || "我想看清當下狀態與流月節奏") + "\n\n" +
+        "【八字與流月】\n" +
+        baziInfo.gText + "，出生於 " + dv + "，日主 " + day.stem + "（" + ELEM[day.stem] + "）\n" +
+        "四柱：" + four[0].gz + " / " + four[1].gz + " / " + four[2].gz + " / " + four[3].gz + "\n" +
+        "流年 " + flowYM.yGZ + "（" + flowYearGod + "），當下流月 " + flowYM.mGZ + "（" + flowMonthGod + "）\n\n" +
+        "【三張開悟卡】\n" +
+        "1. " + picked[0].pos + "：" + picked[0].card.name + "（" + picked[0].card.desc + "）\n" +
+        "2. " + picked[1].pos + "：" + picked[1].card.name + "（" + picked[1].card.desc + "）\n" +
+        "3. " + picked[2].pos + "：" + picked[2].card.name + "（" + picked[2].card.desc + "）\n\n" +
+        "【回覆要求】\n" +
+        "先接住情緒，再緊扣提問連結流月與三張牌給出具體微調建議與情緒價值，避免空泛套話。";
+      document.getElementById("promptOut").textContent = promptText;
+    }
+
+    window.addEventListener("load", function () {
+      draw3();
+      refreshAll();
+
+      document.getElementById("bDate").addEventListener("change", refreshAll);
+      document.getElementById("bHour").addEventListener("change", refreshAll);
+      document.getElementById("bGender").addEventListener("change", refreshAll);
+      document.getElementById("qInput").addEventListener("input", refreshAll);
+      document.getElementById("drawBtn").addEventListener("click", function () {
+        draw3();
+        refreshAll();
+      });
+
+      var tags = document.querySelectorAll(".tag");
+      for (var i = 0; i < tags.length; i++) {
+        tags[i].addEventListener("click", function () {
+          var ta = document.getElementById("qInput");
+          var t = this.getAttribute("data-t") || "";
+          if (ta.value.indexOf(t) === -1) {
+            ta.value = ta.value ? (t + "\n" + ta.value) : (t + "\n");
+          }
+          refreshAll();
+        });
+      }
+
+      document.getElementById("adminBtn").addEventListener("click", function () {
+        document.getElementById("adminPanel").classList.toggle("show");
+      });
+
+      document.getElementById("copyBtn").addEventListener("click", function () {
+        var txt = document.getElementById("promptOut").textContent;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt);
+        }
+        document.getElementById("copyMsg").textContent = "✅ 已複製！";
+      });
+    });
+  </script>
+</body>
+</html>
